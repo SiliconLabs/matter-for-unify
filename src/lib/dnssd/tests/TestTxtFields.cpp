@@ -301,23 +301,23 @@ void TestGetCommissionerPasscode(nlTestSuite * inSuite, void * inContext)
     NL_TEST_ASSERT(inSuite, GetCommissionerPasscode(GetSpan(cm)) == 0);
 }
 
-bool NodeDataIsEmpty(const DiscoveredNodeData & node)
+bool NodeDataIsEmpty(const CommissionNodeData & node)
 {
 
-    if (node.nodeData.longDiscriminator != 0 || node.nodeData.vendorId != 0 || node.nodeData.productId != 0 ||
-        node.nodeData.commissioningMode != 0 || node.nodeData.deviceType != 0 || node.nodeData.rotatingIdLen != 0 ||
-        node.nodeData.pairingHint != 0 || node.resolutionData.mrpRetryIntervalIdle.HasValue() ||
-        node.resolutionData.mrpRetryIntervalActive.HasValue() || node.resolutionData.mrpRetryActiveThreshold.HasValue() ||
-        node.resolutionData.isICDOperatingAsLIT.HasValue() || node.resolutionData.supportsTcp ||
-        node.nodeData.commissionerPasscode != 0)
+    if (node.longDiscriminator != 0 || node.vendorId != 0 || node.productId != 0 ||
+        node.commissioningMode != 0 || node.deviceType != 0 || node.rotatingIdLen != 0 ||
+        node.pairingHint != 0 || node.mrpRetryIntervalIdle.HasValue() ||
+        node.mrpRetryIntervalActive.HasValue() || node.mrpRetryActiveThreshold.HasValue() ||
+        node.isICDOperatingAsLIT.HasValue() || node.supportsTcp ||
+        node.commissionerPasscode != 0)
     {
         return false;
     }
-    if (strcmp(node.nodeData.deviceName, "") != 0 || strcmp(node.nodeData.pairingInstruction, "") != 0)
+    if (strcmp(node.deviceName, "") != 0 || strcmp(node.pairingInstruction, "") != 0)
     {
         return false;
     }
-    for (uint8_t id : node.nodeData.rotatingId)
+    for (uint8_t id : node.rotatingId)
     {
         if (id != 0)
         {
@@ -332,83 +332,86 @@ void TestFillDiscoveredNodeDataFromTxt(nlTestSuite * inSuite, void * inContext)
 {
     char key[3];
     char val[16];
-    DiscoveredNodeData filled;
+    CommissionNodeData filled;
 
     // Long discriminator
     strcpy(key, "D");
     strcpy(val, "840");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.longDiscriminator == 840);
-    filled.nodeData.longDiscriminator = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.longDiscriminator == 840);
+    filled.longDiscriminator = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
-
+    
     // vendor and product
     strcpy(key, "VP");
     strcpy(val, "123+456");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.vendorId == 123);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.productId == 456);
-    filled.nodeData.vendorId  = 0;
-    filled.nodeData.productId = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.vendorId == 123);
+    NL_TEST_ASSERT(inSuite, filled.productId == 456);
+    filled.vendorId  = 0;
+    filled.productId = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
     // Commissioning mode
     strcpy(key, "CM");
     strcpy(val, "1");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.commissioningMode == 1);
-    filled.nodeData.commissioningMode = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.commissioningMode == 1);
+    filled.commissioningMode = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
-    // Commissioning mode
+    // Supports Commissioner Generated Passcode
     strcpy(key, "CP");
     strcpy(val, "1");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.commissionerPasscode == 1);
-    filled.nodeData.commissionerPasscode = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.commissionerPasscode == 1);
+    filled.commissionerPasscode = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
+
 
     // Device type
     strcpy(key, "DT");
     strcpy(val, "1");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.deviceType == 1);
-    filled.nodeData.deviceType = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.deviceType == 1);
+    filled.deviceType = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
+
     // Device name
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
     strcpy(key, "DN");
     strcpy(val, "abc");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, strcmp(filled.nodeData.deviceName, "abc") == 0);
-    memset(filled.nodeData.deviceName, 0, sizeof(filled.nodeData.deviceName));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, strcmp(filled.deviceName, "abc") == 0);
+    memset(filled.deviceName, 0, sizeof(filled.deviceName));
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
     // Rotating device id
     strcpy(key, "RI");
     strcpy(val, "1A2B");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.rotatingId[0] == 0x1A);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.rotatingId[1] == 0x2B);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.rotatingIdLen == 2);
-    filled.nodeData.rotatingIdLen = 0;
-    memset(filled.nodeData.rotatingId, 0, sizeof(filled.nodeData.rotatingId));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.rotatingId[0] == 0x1A);
+    NL_TEST_ASSERT(inSuite, filled.rotatingId[1] == 0x2B);
+    NL_TEST_ASSERT(inSuite, filled.rotatingIdLen == 2);
+    filled.rotatingIdLen = 0;
+    memset(filled.rotatingId, 0, sizeof(filled.rotatingId));
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
     // Pairing instruction
     strcpy(key, "PI");
     strcpy(val, "hint");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, strcmp(filled.nodeData.pairingInstruction, "hint") == 0);
-    memset(filled.nodeData.pairingInstruction, 0, sizeof(filled.nodeData.pairingInstruction));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, strcmp(filled.pairingInstruction, "hint") == 0);
+    memset(filled.pairingInstruction, 0, sizeof(filled.pairingInstruction));
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 
     // Pairing hint
     strcpy(key, "PH");
     strcpy(val, "1");
-    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled.nodeData);
-    NL_TEST_ASSERT(inSuite, filled.nodeData.pairingHint == 1);
-    filled.nodeData.pairingHint = 0;
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), filled);
+    NL_TEST_ASSERT(inSuite, filled.pairingHint == 1);
+    filled.pairingHint = 0;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(filled));
 }
 
@@ -422,7 +425,7 @@ bool NodeDataIsEmpty(const ResolvedNodeData & nodeData)
 
 void ResetRetryIntervalIdle(DiscoveredNodeData & nodeData)
 {
-    nodeData.resolutionData.mrpRetryIntervalIdle.ClearValue();
+    nodeData.Get<CommissionNodeData>().mrpRetryIntervalIdle.ClearValue();
 }
 
 void ResetRetryIntervalIdle(ResolvedNodeData & nodeData)
@@ -432,7 +435,7 @@ void ResetRetryIntervalIdle(ResolvedNodeData & nodeData)
 
 void ResetRetryIntervalActive(DiscoveredNodeData & nodeData)
 {
-    nodeData.resolutionData.mrpRetryIntervalActive.ClearValue();
+    nodeData.Get<CommissionNodeData>().mrpRetryIntervalActive.ClearValue();
 }
 
 void ResetRetryIntervalActive(ResolvedNodeData & nodeData)
@@ -442,12 +445,332 @@ void ResetRetryIntervalActive(ResolvedNodeData & nodeData)
 
 void ResetRetryActiveThreshold(DiscoveredNodeData & nodeData)
 {
-    nodeData.resolutionData.mrpRetryActiveThreshold.ClearValue();
+    nodeData.Get<CommissionNodeData>().mrpRetryActiveThreshold.ClearValue();
 }
 
 void ResetRetryActiveThreshold(ResolvedNodeData & nodeData)
 {
     nodeData.resolutionData.mrpRetryActiveThreshold.ClearValue();
+}
+
+template <class NodeData>
+void DiscoveredTxtFieldSessionIdleInterval(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[16];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // Minimum
+    strcpy(key, "SII");
+    strcpy(val, "1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().Value() == 1_ms32);
+
+    // Maximum
+    strcpy(key, "SII");
+    strcpy(val, "3600000");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().Value() == 3600000_ms32);
+
+    // Test no other fields were populated
+    ResetRetryIntervalIdle(nodeData);
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+
+    // Invalid SII - negative value
+    strcpy(key, "SII");
+    strcpy(val, "-1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+
+    // Invalid SII - greater than maximum
+    strcpy(key, "SII");
+    strcpy(val, "3600001");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+
+    // Invalid SII - much greater than maximum
+    strcpy(key, "SII");
+    strcpy(val, "1095216660481"); // 0xFF00000001 == 1 (mod 2^32)
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+
+    // Invalid SII - hexadecimal value
+    strcpy(key, "SII");
+    strcpy(val, "0x20");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+
+    // Invalid SII - leading zeros
+    strcpy(key, "SII");
+    strcpy(val, "0700");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+
+    // Invalid SII - text at the end
+    strcpy(key, "SII");
+    strcpy(val, "123abc");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalIdle().HasValue());
+}
+
+// Test SAI (formerly CRA)
+template <class NodeData>
+void DiscoveredTxtFieldSessionActiveInterval(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[16];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // Minimum
+    strcpy(key, "SAI");
+    strcpy(val, "1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalActive().Value() == 1_ms32);
+
+    // Maximum
+    strcpy(key, "SAI");
+    strcpy(val, "3600000");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryIntervalActive().Value() == 3600000_ms32);
+
+    // Test no other fields were populated
+    ResetRetryIntervalActive(nodeData);
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+
+    // Invalid SAI - negative value
+    strcpy(key, "SAI");
+    strcpy(val, "-1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+
+    // Invalid SAI - greater than maximum
+    strcpy(key, "SAI");
+    strcpy(val, "3600001");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+
+    // Invalid SAI - much greater than maximum
+    strcpy(key, "SAI");
+    strcpy(val, "1095216660481"); // 0xFF00000001 == 1 (mod 2^32)
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+
+    // Invalid SAI - hexadecimal value
+    strcpy(key, "SAI");
+    strcpy(val, "0x20");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+
+    // Invalid SAI - leading zeros
+    strcpy(key, "SAI");
+    strcpy(val, "0700");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+
+    // Invalid SAI - text at the end
+    strcpy(key, "SAI");
+    strcpy(val, "123abc");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryIntervalActive().HasValue());
+}
+
+// Test SAT (Session Active Threshold)
+template <class NodeData>
+void DiscoveredTxtFieldSessionActiveThreshold(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[16];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // Minimum
+    strcpy(key, "SAT");
+    strcpy(val, "1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().Value() == 1_ms16);
+
+    // Maximum
+    strcpy(key, "SAT");
+    strcpy(val, "65535");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().Value() == 65535_ms16);
+
+    // Test no other fields were populated
+    ResetRetryActiveThreshold(nodeData);
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+
+    // Invalid SAI - negative value
+    strcpy(key, "SAT");
+    strcpy(val, "-1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+
+    // Invalid SAI - greater than maximum
+    strcpy(key, "SAT");
+    strcpy(val, "65536");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+
+    // Invalid SAT - much greater than maximum
+    strcpy(key, "SAT");
+    strcpy(val, "1095216660481"); // 0xFF00000001 == 1 (mod 2^32)
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+
+    // Invalid SAT - hexadecimal value
+    strcpy(key, "SAT");
+    strcpy(val, "0x20");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+
+    // Invalid SAT - leading zeros
+    strcpy(key, "SAT");
+    strcpy(val, "0700");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+
+    // Invalid SAT - text at the end
+    strcpy(key, "SAT");
+    strcpy(val, "123abc");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().GetMrpRetryActiveThreshold().HasValue());
+}
+
+// Test T (TCP support)
+template <class NodeData>
+void DiscoveredTxtFieldTcpSupport(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[8];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // True
+    strcpy(key, "T");
+    strcpy(val, "1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().supportsTcp);
+
+    // Test no other fields were populated
+    nodeData.Get<NodeData>().supportsTcp = false;
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+
+    // False
+    strcpy(key, "T");
+    strcpy(val, "0");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().supportsTcp == false);
+
+    // Invalid value, stil false
+    strcpy(key, "T");
+    strcpy(val, "asdf");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().supportsTcp == false);
+}
+
+// Test ICD (ICD operation Mode)
+template <class NodeData>
+void DiscoveredTxtFieldICDoperatesAsLIT(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[16];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // ICD is operating as a LIT device
+    strcpy(key, "ICD");
+    strcpy(val, "1");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().isICDOperatingAsLIT.HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().isICDOperatingAsLIT.Value());
+
+    // Test no other fields were populated
+    nodeData.Get<NodeData>().isICDOperatingAsLIT.ClearValue();
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+
+    // ICD is operating as a SIT device
+    strcpy(key, "ICD");
+    strcpy(val, "0");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().isICDOperatingAsLIT.HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().isICDOperatingAsLIT.Value() == false);
+
+    nodeData.Get<NodeData>().isICDOperatingAsLIT.ClearValue();
+    NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData.Get<NodeData>()));
+    // Invalid value, No key set
+    strcpy(key, "ICD");
+    strcpy(val, "asdf");
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().isICDOperatingAsLIT.HasValue() == false);
+}
+
+// Test IsDeviceTreatedAsSleepy() with CRI
+template <class NodeData>
+void DiscoveredTestIsDeviceSessionIdle(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[32];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    const ReliableMessageProtocolConfig defaultMRPConfig(CHIP_CONFIG_MRP_LOCAL_IDLE_RETRY_INTERVAL,
+                                                         CHIP_CONFIG_MRP_LOCAL_ACTIVE_RETRY_INTERVAL);
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // No key/val set, so the device can't be sleepy
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
+
+    // If the interval is the default value, the device is not sleepy
+    strcpy(key, "SII");
+    sprintf(val, "%d", static_cast<int>(CHIP_CONFIG_MRP_LOCAL_IDLE_RETRY_INTERVAL.count()));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
+
+    // If the interval is greater than the default value, the device is sleepy
+    sprintf(key, "SII");
+    sprintf(val, "%d", static_cast<int>(CHIP_CONFIG_MRP_LOCAL_IDLE_RETRY_INTERVAL.count() + 1));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
+}
+
+// Test IsDeviceTreatedAsSleepy() with CRA
+template <class NodeData>
+void DiscoveredTestIsDeviceSessionActive(nlTestSuite * inSuite, void * inContext)
+{
+    char key[4];
+    char val[32];
+    DiscoveredNodeData nodeData;
+    nodeData.Set<NodeData>();
+    const ReliableMessageProtocolConfig defaultMRPConfig(CHIP_CONFIG_MRP_LOCAL_IDLE_RETRY_INTERVAL,
+                                                         CHIP_CONFIG_MRP_LOCAL_ACTIVE_RETRY_INTERVAL);
+    CommonResolutionData & resolutionData = nodeData.Get<NodeData>();
+
+    // No key/val set, so the device can't be sleepy
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
+
+    // If the interval is the default value, the device is not sleepy
+    sprintf(key, "SAI");
+    sprintf(val, "%d", static_cast<int>(CHIP_CONFIG_MRP_LOCAL_ACTIVE_RETRY_INTERVAL.count()));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, !nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
+
+    // If the interval is greater than the default value, the device is sleepy
+    strcpy(key, "SAI");
+    sprintf(val, "%d", static_cast<int>(CHIP_CONFIG_MRP_LOCAL_ACTIVE_RETRY_INTERVAL.count() + 1));
+    FillNodeDataFromTxt(GetSpan(key), GetSpan(val), resolutionData);
+    NL_TEST_ASSERT(inSuite, nodeData.Get<NodeData>().IsDeviceTreatedAsSleepy(&defaultMRPConfig));
 }
 
 // Test SAI (formally CRI)
@@ -636,7 +959,6 @@ void TxtFieldSessionActiveThreshold(nlTestSuite * inSuite, void * inContext)
     strcpy(key, "SAT");
     strcpy(val, "123abc");
     FillNodeDataFromTxt(GetSpan(key), GetSpan(val), nodeData.resolutionData);
-    NL_TEST_ASSERT(inSuite, !nodeData.resolutionData.GetMrpRetryActiveThreshold().HasValue());
 }
 
 // Test T (TCP support)
@@ -652,7 +974,7 @@ void TxtFieldTcpSupport(nlTestSuite * inSuite, void * inContext)
     strcpy(val, "1");
     FillNodeDataFromTxt(GetSpan(key), GetSpan(val), nodeData.resolutionData);
     NL_TEST_ASSERT(inSuite, nodeData.resolutionData.supportsTcp);
-
+    
     // Test no other fields were populated
     nodeData.resolutionData.supportsTcp = false;
     NL_TEST_ASSERT(inSuite, NodeDataIsEmpty(nodeData));
@@ -771,13 +1093,13 @@ const nlTest sTests[] = {
     NL_TEST_DEF("TxtFieldPairingInstruction", TestGetPairingInstruction),                    //
     NL_TEST_DEF("TxtFieldCommissionerPasscode", TestGetCommissionerPasscode),                //
     NL_TEST_DEF("TxtFieldFillDiscoveredNodeDataFromTxt", TestFillDiscoveredNodeDataFromTxt), //
-    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryIntervalIdle", TxtFieldSessionIdleInterval<DiscoveredNodeData>),
-    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryIntervalActive", TxtFieldSessionActiveInterval<DiscoveredNodeData>),
-    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryActiveThreshold", TxtFieldSessionActiveThreshold<DiscoveredNodeData>),
-    NL_TEST_DEF("TxtDiscoveredFieldTcpSupport", (TxtFieldTcpSupport<DiscoveredNodeData>) ),
-    NL_TEST_DEF("TxtDiscoveredIsICDoperatingAsLIT", (TxtFieldICDoperatesAsLIT<DiscoveredNodeData>) ),
-    NL_TEST_DEF("TxtDiscoveredIsDeviceSessionIdle", TestIsDeviceSessionIdle<DiscoveredNodeData>),
-    NL_TEST_DEF("TxtDiscoveredIsDeviceSessionActive", TestIsDeviceSessionActive<DiscoveredNodeData>),
+    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryIntervalIdle", DiscoveredTxtFieldSessionIdleInterval<CommissionNodeData>),
+    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryIntervalActive", DiscoveredTxtFieldSessionActiveInterval<CommissionNodeData>),
+    NL_TEST_DEF("TxtDiscoveredFieldMrpRetryActiveThreshold", DiscoveredTxtFieldSessionActiveThreshold<CommissionNodeData>),
+    NL_TEST_DEF("TxtDiscoveredFieldTcpSupport", (DiscoveredTxtFieldTcpSupport<CommissionNodeData>) ),
+    NL_TEST_DEF("TxtDiscoveredIsICDoperatingAsLIT", (DiscoveredTxtFieldICDoperatesAsLIT<CommissionNodeData>) ),
+    NL_TEST_DEF("TxtDiscoveredIsDeviceSessionIdle", DiscoveredTestIsDeviceSessionIdle<CommissionNodeData>),
+    NL_TEST_DEF("TxtDiscoveredIsDeviceSessionActive", DiscoveredTestIsDeviceSessionActive<CommissionNodeData>),
     NL_TEST_DEF("TxtResolvedFieldMrpRetryIntervalIdle", TxtFieldSessionIdleInterval<ResolvedNodeData>),
     NL_TEST_DEF("TxtResolvedFieldMrpRetryIntervalActive", TxtFieldSessionActiveInterval<ResolvedNodeData>),
     NL_TEST_DEF("TxtResolvedFieldMrpRetryActiveThreshold", TxtFieldSessionActiveThreshold<ResolvedNodeData>),

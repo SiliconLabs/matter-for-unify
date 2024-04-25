@@ -394,30 +394,34 @@ void TestParseCommissionable(nlTestSuite * inSuite, void * inContext)
     NL_TEST_ASSERT(inSuite, !resolver.GetMissingRequiredInformation().HasAny());
 
     // At this point taking value should work. Once taken, the resolver is reset.
-    DiscoveredNodeData nodeData;
-    NL_TEST_ASSERT(inSuite, resolver.Take(nodeData) == CHIP_NO_ERROR);
+
+    DiscoveredNodeData discoveredNodeData;
+    NL_TEST_ASSERT(inSuite, resolver.Take(discoveredNodeData) == CHIP_NO_ERROR);
     NL_TEST_ASSERT(inSuite, !resolver.IsActive());
 
+    NL_TEST_ASSERT(inSuite, discoveredNodeData.Is<CommissionNodeData>());
+    CommissionNodeData nodeData = discoveredNodeData.Get<CommissionNodeData>();
+
     // validate data as it was passed in
-    NL_TEST_ASSERT(inSuite, nodeData.resolutionData.numIPs == 2);
-    NL_TEST_ASSERT(inSuite, nodeData.resolutionData.port == 0x1234);
-    NL_TEST_ASSERT(inSuite, !nodeData.resolutionData.supportsTcp);
-    NL_TEST_ASSERT(inSuite, nodeData.resolutionData.GetMrpRetryIntervalActive().HasValue());
+    NL_TEST_ASSERT(inSuite, nodeData.numIPs == 2);
+    NL_TEST_ASSERT(inSuite, nodeData.port == 0x1234);
+    NL_TEST_ASSERT(inSuite, !nodeData.supportsTcp);
+    NL_TEST_ASSERT(inSuite, nodeData.GetMrpRetryIntervalActive().HasValue());
     NL_TEST_ASSERT(inSuite,
-                   nodeData.resolutionData.GetMrpRetryIntervalActive().Value() == chip::System::Clock::Milliseconds32(321));
-    NL_TEST_ASSERT(inSuite, !nodeData.resolutionData.GetMrpRetryIntervalIdle().HasValue());
+                   nodeData.GetMrpRetryIntervalActive().Value() == chip::System::Clock::Milliseconds32(321));
+    NL_TEST_ASSERT(inSuite, !nodeData.GetMrpRetryIntervalIdle().HasValue());
 
     Inet::IPAddress addr;
     NL_TEST_ASSERT(inSuite, Inet::IPAddress::FromString("fe80::abcd:ef11:2233:4455", addr));
-    NL_TEST_ASSERT(inSuite, nodeData.resolutionData.ipAddress[0] == addr);
+    NL_TEST_ASSERT(inSuite, nodeData.ipAddress[0] == addr);
     NL_TEST_ASSERT(inSuite, Inet::IPAddress::FromString("fe80::f0f1:f2f3:f4f5:1234", addr));
-    NL_TEST_ASSERT(inSuite, nodeData.resolutionData.ipAddress[1] == addr);
+    NL_TEST_ASSERT(inSuite, nodeData.ipAddress[1] == addr);
 
     // parsed txt data for discovered nodes
-    NL_TEST_ASSERT(inSuite, nodeData.nodeData.longDiscriminator == 22345);
-    NL_TEST_ASSERT(inSuite, nodeData.nodeData.vendorId == 321);
-    NL_TEST_ASSERT(inSuite, nodeData.nodeData.productId == 654);
-    NL_TEST_ASSERT(inSuite, strcmp(nodeData.nodeData.deviceName, "mytest") == 0);
+    NL_TEST_ASSERT(inSuite, nodeData.longDiscriminator == 22345);
+    NL_TEST_ASSERT(inSuite, nodeData.vendorId == 321);
+    NL_TEST_ASSERT(inSuite, nodeData.productId == 654);
+    NL_TEST_ASSERT(inSuite, strcmp(nodeData.deviceName, "mytest") == 0);
 }
 
 const nlTest sTests[] = {

@@ -62,7 +62,7 @@ public:
     void InitAppDelegation();
 
     CHIP_ERROR DiscoverCommissioners(chip::Controller::DeviceDiscoveryDelegate * deviceDiscoveryDelegate = nullptr);
-    const chip::Dnssd::DiscoveredNodeData *
+    const chip::Dnssd::CommissionNodeData *
     GetDiscoveredCommissioner(int index, chip::Optional<TargetVideoPlayerInfo *> & outAssociatedConnectableVideoPlayer);
     CHIP_ERROR OpenBasicCommissioningWindow(CommissioningCallbacks commissioningCallbacks,
                                             std::function<void(TargetVideoPlayerInfo *)> onConnectionSuccess,
@@ -71,7 +71,7 @@ public:
 
 #if CHIP_DEVICE_CONFIG_ENABLE_COMMISSIONER_DISCOVERY_CLIENT
     CHIP_ERROR SendUserDirectedCommissioningRequest(chip::Transport::PeerAddress commissioner);
-    CHIP_ERROR SendUserDirectedCommissioningRequest(chip::Dnssd::DiscoveredNodeData * selectedCommissioner);
+    CHIP_ERROR SendUserDirectedCommissioningRequest(chip::Dnssd::CommissionNodeData * selectedCommissioner);
 #endif // CHIP_DEVICE_CONFIG_ENABLE_COMMISSIONER_DISCOVERY_CLIENT
 
     TargetVideoPlayerInfo * GetActiveTargetVideoPlayer() { return &mActiveTargetVideoPlayerInfo; }
