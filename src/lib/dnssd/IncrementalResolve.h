@@ -99,7 +99,7 @@ public:
     /// method.
     bool IsActive() const { return mSpecificResolutionData.Valid(); }
 
-    bool IsActiveBrowseParse() const { return mSpecificResolutionData.Is<CommissionNodeData>(); }
+    bool IsActiveCommissionParse() const { return mSpecificResolutionData.Is<CommissionNodeData>(); }
     bool IsActiveOperationalParse() const { return mSpecificResolutionData.Is<OperationalNodeData>(); }
 
     ServiceNameType GetCurrentType() const { return mServiceNameType; }
@@ -108,7 +108,8 @@ public:
     /// interested on, after which TXT and A/AAAA are looked for.
     ///
     /// If this function returns with error, the object will be in an inactive state.
-    CHIP_ERROR InitializeParsing(mdns::Minimal::SerializedQNameIterator name, const mdns::Minimal::SrvRecord & srv);
+    CHIP_ERROR InitializeParsing(mdns::Minimal::SerializedQNameIterator name, const uint64_t ttl,
+                                 const mdns::Minimal::SrvRecord & srv);
 
     /// Notify that a new record is being processed.
     /// Will handle filtering and processing of data to determine if the entry is relevant for
@@ -143,7 +144,7 @@ public:
 
     /// Take the current value of the object and clear it once returned.
     ///
-    /// Object must be in `IsActiveBrowseParse()` for this to succeed.
+    /// Object must be in `IsActive()` for this to succeed.
     /// Data will be returned (and cleared) even if not yet complete based
     /// on `GetMissingRequiredInformation()`. This method takes as much data as
     /// it was parsed so far.

@@ -197,8 +197,21 @@ struct CommonResolutionData
 struct OperationalNodeData
 {
     PeerId peerId;
-
+    bool hasZeroTTL;
     void Reset() { peerId = PeerId(); }
+};
+
+struct OperationalNodeBrowseData : public OperationalNodeData
+{
+    OperationalNodeBrowseData() { Reset(); };
+    void LogDetail() const
+    {
+        ChipLogDetail(Discovery, "Discovered Operational node:\r\n");
+        ChipLogDetail(Discovery, "\tNode Instance: " ChipLogFormatX64 ":" ChipLogFormatX64 "\r\n",
+                        ChipLogValueX64(peerId.GetCompressedFabricId()),
+                        ChipLogValueX64(peerId.GetNodeId()));
+        ChipLogDetail(Discovery, "\thasZeroTTL: %s\r\n", hasZeroTTL ? "true" : "false");
+    }
 };
 
 inline constexpr size_t kMaxDeviceNameLen         = 32;
@@ -301,12 +314,13 @@ struct ResolvedNodeData
     }
 };
 
-using DiscoveredNodeData = Variant<CommissionNodeData>;
+using DiscoveredNodeData = Variant<CommissionNodeData, OperationalNodeBrowseData>;
 
-/// Callbacks for discovering nodes advertising non-operational status:
+/// Callbacks for discovering nodes advertising both operational and non-operational status:
 ///   - Commissioners
 ///   - Nodes in commissioning modes over IP (e.g. ethernet devices, devices already
 ///     connected to thread/wifi or devices with a commissioning window open)
+///   - Operational nodes
 class DiscoverNodeDelegate
 {
 public:

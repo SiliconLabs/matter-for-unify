@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include <lib/dnssd/ServiceNaming.h>
 #include <lib/dnssd/minimal_mdns/core/tests/QNameStrings.h>
 #include <lib/dnssd/minimal_mdns/records/IP.h>
 #include <lib/dnssd/minimal_mdns/records/Ptr.h>
@@ -163,7 +164,7 @@ void TestCreation(nlTestSuite * inSuite, void * inContext)
     IncrementalResolver resolver;
 
     NL_TEST_ASSERT(inSuite, !resolver.IsActive());
-    NL_TEST_ASSERT(inSuite, !resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, !resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite, !resolver.IsActiveOperationalParse());
     NL_TEST_ASSERT(
         inSuite,
@@ -180,10 +181,10 @@ void TestInactiveResetOnInitError(nlTestSuite * inSuite, void * inContext)
     PreloadSrvRecord(inSuite, srvRecord);
 
     // test host name is not a 'matter' name
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestHostName.Serialized(), srvRecord) != CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestHostName.Serialized(), 0, srvRecord) != CHIP_NO_ERROR);
 
     NL_TEST_ASSERT(inSuite, !resolver.IsActive());
-    NL_TEST_ASSERT(inSuite, !resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, !resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite, !resolver.IsActiveOperationalParse());
 }
 
@@ -196,10 +197,10 @@ void TestStartOperational(nlTestSuite * inSuite, void * inContext)
     SrvRecord srvRecord;
     PreloadSrvRecord(inSuite, srvRecord);
 
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestOperationalName.Serialized(), srvRecord) == CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestOperationalName.Serialized(), 1, srvRecord) == CHIP_NO_ERROR);
 
     NL_TEST_ASSERT(inSuite, resolver.IsActive());
-    NL_TEST_ASSERT(inSuite, !resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, !resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite, resolver.IsActiveOperationalParse());
     NL_TEST_ASSERT(inSuite,
                    resolver.GetMissingRequiredInformation().HasOnly(IncrementalResolver::RequiredInformationBitFlags::kIpAddress));
@@ -215,10 +216,10 @@ void TestStartCommissionable(nlTestSuite * inSuite, void * inContext)
     SrvRecord srvRecord;
     PreloadSrvRecord(inSuite, srvRecord);
 
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionableNode.Serialized(), srvRecord) == CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionableNode.Serialized(), 0, srvRecord) == CHIP_NO_ERROR);
 
     NL_TEST_ASSERT(inSuite, resolver.IsActive());
-    NL_TEST_ASSERT(inSuite, resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite, !resolver.IsActiveOperationalParse());
     NL_TEST_ASSERT(inSuite,
                    resolver.GetMissingRequiredInformation().HasOnly(IncrementalResolver::RequiredInformationBitFlags::kIpAddress));
@@ -234,10 +235,10 @@ void TestStartCommissioner(nlTestSuite * inSuite, void * inContext)
     SrvRecord srvRecord;
     PreloadSrvRecord(inSuite, srvRecord);
 
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionerNode.Serialized(), srvRecord) == CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionerNode.Serialized(), 0, srvRecord) == CHIP_NO_ERROR);
 
     NL_TEST_ASSERT(inSuite, resolver.IsActive());
-    NL_TEST_ASSERT(inSuite, resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite, !resolver.IsActiveOperationalParse());
     NL_TEST_ASSERT(inSuite,
                    resolver.GetMissingRequiredInformation().HasOnly(IncrementalResolver::RequiredInformationBitFlags::kIpAddress));
@@ -253,7 +254,7 @@ void TestParseOperational(nlTestSuite * inSuite, void * inContext)
     SrvRecord srvRecord;
     PreloadSrvRecord(inSuite, srvRecord);
 
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestOperationalName.Serialized(), srvRecord) == CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestOperationalName.Serialized(), 1, srvRecord) == CHIP_NO_ERROR);
 
     // once initialized, parsing should be ready however no IP address is available
     NL_TEST_ASSERT(inSuite, resolver.IsActiveOperationalParse());
@@ -312,6 +313,7 @@ void TestParseOperational(nlTestSuite * inSuite, void * inContext)
     NL_TEST_ASSERT(inSuite,
                    nodeData.operationalData.peerId ==
                        PeerId().SetCompressedFabricId(0x1234567898765432LL).SetNodeId(0xABCDEFEDCBAABCDELL));
+    NL_TEST_ASSERT(inSuite, !nodeData.operationalData.hasZeroTTL);
     NL_TEST_ASSERT(inSuite, nodeData.resolutionData.numIPs == 1);
     NL_TEST_ASSERT(inSuite, nodeData.resolutionData.port == 0x1234);
     NL_TEST_ASSERT(inSuite, !nodeData.resolutionData.supportsTcp);
@@ -333,10 +335,10 @@ void TestParseCommissionable(nlTestSuite * inSuite, void * inContext)
     SrvRecord srvRecord;
     PreloadSrvRecord(inSuite, srvRecord);
 
-    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionableNode.Serialized(), srvRecord) == CHIP_NO_ERROR);
+    NL_TEST_ASSERT(inSuite, resolver.InitializeParsing(kTestCommissionableNode.Serialized(), 0, srvRecord) == CHIP_NO_ERROR);
 
     // once initialized, parsing should be ready however no IP address is available
-    NL_TEST_ASSERT(inSuite, resolver.IsActiveBrowseParse());
+    NL_TEST_ASSERT(inSuite, resolver.IsActiveCommissionParse());
     NL_TEST_ASSERT(inSuite,
                    resolver.GetMissingRequiredInformation().HasOnly(IncrementalResolver::RequiredInformationBitFlags::kIpAddress));
     NL_TEST_ASSERT(inSuite, resolver.GetTargetHostName() == kTestHostName.Serialized());
