@@ -26,6 +26,7 @@
 #include <lib/core/PeerId.h>
 #include <lib/dnssd/Constants.h>
 #include <lib/support/BytesToHex.h>
+#include <lib/support/Variant.h>
 #include <lib/support/logging/CHIPLogging.h>
 #include <messaging/ReliableMessageProtocolConfig.h>
 
@@ -196,8 +197,21 @@ struct CommonResolutionData
 struct OperationalNodeData
 {
     PeerId peerId;
-
+    bool hasZeroTTL;
     void Reset() { peerId = PeerId(); }
+};
+
+struct OperationalNodeBrowseData : public OperationalNodeData
+{
+    OperationalNodeBrowseData() { Reset(); };
+    void LogDetail() const
+    {
+        ChipLogDetail(Discovery, "Discovered Operational node:\r\n");
+        ChipLogDetail(Discovery, "\tNode Instance: " ChipLogFormatX64 ":" ChipLogFormatX64 "\r\n",
+                        ChipLogValueX64(peerId.GetCompressedFabricId()),
+                        ChipLogValueX64(peerId.GetNodeId()));
+        ChipLogDetail(Discovery, "\thasZeroTTL: %s\r\n", hasZeroTTL ? "true" : "false");
+    }
 };
 
 inline constexpr size_t kMaxDeviceNameLen         = 32;
@@ -205,7 +219,7 @@ inline constexpr size_t kMaxRotatingIdLen         = 50;
 inline constexpr size_t kMaxPairingInstructionLen = 128;
 
 /// Data that is specific to commisionable/commissioning node discovery
-struct CommissionNodeData
+struct CommissionNodeData : public CommonResolutionData
 {
     size_t rotatingIdLen                                      = 0;
     uint32_t deviceType                                       = 0;
@@ -233,6 +247,9 @@ struct CommissionNodeData
 
     void LogDetail() const
     {
+        ChipLogDetail(Discovery, "Discovered commissionable/commissioner node:");
+        CommonResolutionData::LogDetail();
+
         if (rotatingIdLen > 0)
         {
             char rotatingIdString[chip::Dnssd::kMaxRotatingIdLen * 2 + 1] = "";
@@ -297,34 +314,17 @@ struct ResolvedNodeData
     }
 };
 
-struct DiscoveredNodeData
-{
-    CommonResolutionData resolutionData;
-    CommissionNodeData commissionData;
+using DiscoveredNodeData = Variant<CommissionNodeData, OperationalNodeBrowseData>;
 
-    void Reset()
-    {
-        resolutionData.Reset();
-        commissionData.Reset();
-    }
-    DiscoveredNodeData() { Reset(); }
-
-    void LogDetail() const
-    {
-        ChipLogDetail(Discovery, "Discovered node:");
-        resolutionData.LogDetail();
-        commissionData.LogDetail();
-    }
-};
-
-/// Callbacks for discovering nodes advertising non-operational status:
+/// Callbacks for discovering nodes advertising both operational and non-operational status:
 ///   - Commissioners
 ///   - Nodes in commissioning modes over IP (e.g. ethernet devices, devices already
 ///     connected to thread/wifi or devices with a commissioning window open)
-class CommissioningResolveDelegate
+///   - Operational nodes
+class DiscoverNodeDelegate
 {
 public:
-    virtual ~CommissioningResolveDelegate() = default;
+    virtual ~DiscoverNodeDelegate() = default;
 
     /// Called within the CHIP event loop once a node is discovered.
     ///

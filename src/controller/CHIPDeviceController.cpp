@@ -108,7 +108,7 @@ CHIP_ERROR DeviceController::Init(ControllerInitParams params)
     VerifyOrReturnError(params.systemState->TransportMgr() != nullptr, CHIP_ERROR_INVALID_ARGUMENT);
 
     ReturnErrorOnFailure(mDNSResolver.Init(params.systemState->UDPEndPointManager()));
-    mDNSResolver.SetCommissioningDelegate(this);
+    mDNSResolver.SetDiscoveryDelegate(this);
     RegisterDeviceDiscoveryDelegate(params.deviceDiscoveryDelegate);
 
     VerifyOrReturnError(params.operationalCredentialsDelegate != nullptr, CHIP_ERROR_INVALID_ARGUMENT);
@@ -1628,7 +1628,7 @@ CHIP_ERROR DeviceCommissioner::StopCommissionableDiscovery()
     return mDNSResolver.StopDiscovery();
 }
 
-const Dnssd::DiscoveredNodeData * DeviceCommissioner::GetDiscoveredDevice(int idx)
+const Dnssd::CommissionNodeData * DeviceCommissioner::GetDiscoveredDevice(int idx)
 {
     return GetDiscoveredNode(idx);
 }

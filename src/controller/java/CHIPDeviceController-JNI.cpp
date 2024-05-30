@@ -1876,7 +1876,7 @@ JNI_METHOD(jobject, getDiscoveredDevice)(JNIEnv * env, jobject self, jlong handl
     chip::DeviceLayer::StackLock lock;
 
     AndroidDeviceControllerWrapper * wrapper = AndroidDeviceControllerWrapper::FromJNIHandle(handle);
-    const Dnssd::DiscoveredNodeData * data   = wrapper->Controller()->GetDiscoveredDevice(idx);
+    const Dnssd::CommissionNodeData * data   = wrapper->Controller()->GetDiscoveredDevice(idx);
 
     if (data == nullptr)
     {
@@ -1903,21 +1903,21 @@ JNI_METHOD(jobject, getDiscoveredDevice)(JNIEnv * env, jobject self, jlong handl
 
     jobject discoveredObj = env->NewObject(discoveredDeviceCls, constructor);
 
-    env->SetLongField(discoveredObj, discrminatorID, data->commissionData.longDiscriminator);
+    env->SetLongField(discoveredObj, discrminatorID, data->longDiscriminator);
 
     char ipAddress[100];
-    data->resolutionData.ipAddress[0].ToString(ipAddress, 100);
+    data->ipAddress[0].ToString(ipAddress, 100);
     jstring jniipAdress = env->NewStringUTF(ipAddress);
 
     env->SetObjectField(discoveredObj, ipAddressID, jniipAdress);
-    env->SetIntField(discoveredObj, portID, static_cast<jint>(data->resolutionData.port));
-    env->SetLongField(discoveredObj, deviceTypeID, static_cast<jlong>(data->commissionData.deviceType));
-    env->SetIntField(discoveredObj, vendorIdID, static_cast<jint>(data->commissionData.vendorId));
-    env->SetIntField(discoveredObj, productIdID, static_cast<jint>(data->commissionData.productId));
+    env->SetIntField(discoveredObj, portID, static_cast<jint>(data->port));
+    env->SetLongField(discoveredObj, deviceTypeID, static_cast<jlong>(data->deviceType));
+    env->SetIntField(discoveredObj, vendorIdID, static_cast<jint>(data->vendorId));
+    env->SetIntField(discoveredObj, productIdID, static_cast<jint>(data->productId));
 
     jbyteArray jRotatingId;
-    CHIP_ERROR err = JniReferences::GetInstance().N2J_ByteArray(
-        env, data->commissionData.rotatingId, static_cast<jsize>(data->commissionData.rotatingIdLen), jRotatingId);
+    CHIP_ERROR err =
+        JniReferences::GetInstance().N2J_ByteArray(env, data->rotatingId, static_cast<jsize>(data->rotatingIdLen), jRotatingId);
 
     if (err != CHIP_NO_ERROR)
     {
@@ -1925,12 +1925,12 @@ JNI_METHOD(jobject, getDiscoveredDevice)(JNIEnv * env, jobject self, jlong handl
         return nullptr;
     }
     env->SetObjectField(discoveredObj, rotatingIdID, static_cast<jobject>(jRotatingId));
-    env->SetObjectField(discoveredObj, instanceNameID, env->NewStringUTF(data->commissionData.instanceName));
-    env->SetObjectField(discoveredObj, deviceNameID, env->NewStringUTF(data->commissionData.deviceName));
-    env->SetObjectField(discoveredObj, pairingInstructionID, env->NewStringUTF(data->commissionData.pairingInstruction));
+    env->SetObjectField(discoveredObj, instanceNameID, env->NewStringUTF(data->instanceName));
+    env->SetObjectField(discoveredObj, deviceNameID, env->NewStringUTF(data->deviceName));
+    env->SetObjectField(discoveredObj, pairingInstructionID, env->NewStringUTF(data->pairingInstruction));
 
-    env->CallVoidMethod(discoveredObj, setCommissioningModeID, static_cast<jint>(data->commissionData.commissioningMode));
-    env->CallVoidMethod(discoveredObj, setPairingHintID, static_cast<jint>(data->commissionData.pairingHint));
+    env->CallVoidMethod(discoveredObj, setCommissioningModeID, static_cast<jint>(data->commissioningMode));
+    env->CallVoidMethod(discoveredObj, setPairingHintID, static_cast<jint>(data->pairingHint));
 
     return discoveredObj;
 }
