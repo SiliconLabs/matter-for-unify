@@ -66,18 +66,10 @@ public:
     /**********************************************************
      * Enums
      *********************************************************/
-    using HueStepMode  = chip::app::Clusters::ColorControl::HueStepMode;
-    using HueMoveMode  = chip::app::Clusters::ColorControl::HueMoveMode;
-    using HueDirection = chip::app::Clusters::ColorControl::HueDirection;
-    using Feature      = chip::app::Clusters::ColorControl::Feature;
-
-    enum EnhancedColorMode : uint8_t
-    {
-        kCurrentHueAndCurrentSaturation         = 0,
-        kCurrentXAndCurrentY                    = 1,
-        kColorTemperature                       = 2,
-        kEnhancedCurrentHueAndCurrentSaturation = 3,
-    };
+    using StepModeEnum  = chip::app::Clusters::ColorControl::StepModeEnum;
+    using MoveModeEnum  = chip::app::Clusters::ColorControl::MoveModeEnum;
+    using DirectionEnum = chip::app::Clusters::ColorControl::DirectionEnum;
+    using Feature       = chip::app::Clusters::ColorControl::Feature;
 
     enum Conversion
     {
@@ -143,15 +135,15 @@ public:
 
 #ifdef MATTER_DM_PLUGIN_COLOR_CONTROL_SERVER_HSV
     bool moveHueCommand(chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-                        HueMoveMode moveMode, uint16_t rate, uint8_t optionsMask, uint8_t optionsOverride, bool isEnhanced);
+                        MoveModeEnum moveMode, uint16_t rate, uint8_t optionsMask, uint8_t optionsOverride, bool isEnhanced);
     bool moveToHueCommand(chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath, uint16_t hue,
-                          HueDirection moveDirection, uint16_t transitionTime, uint8_t optionsMask, uint8_t optionsOverride,
+                          DirectionEnum moveDirection, uint16_t transitionTime, uint8_t optionsMask, uint8_t optionsOverride,
                           bool isEnhanced);
     bool moveToHueAndSaturationCommand(chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
                                        uint16_t hue, uint8_t saturation, uint16_t transitionTime, uint8_t optionsMask,
                                        uint8_t optionsOverride, bool isEnhanced);
     bool stepHueCommand(chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-                        HueStepMode stepMode, uint16_t stepSize, uint16_t transitionTime, uint8_t optionsMask,
+                        StepModeEnum stepMode, uint16_t stepSize, uint16_t transitionTime, uint8_t optionsMask,
                         uint8_t optionsOverride, bool isEnhanced);
     bool moveSaturationCommand(chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
                                const chip::app::Clusters::ColorControl::Commands::MoveSaturation::DecodableType & commandData);
@@ -196,7 +188,7 @@ private:
 
     ColorControlServer() {}
     bool shouldExecuteIfOff(chip::EndpointId endpoint, uint8_t optionMask, uint8_t optionOverride);
-    void handleModeSwitch(chip::EndpointId endpoint, uint8_t newColorMode);
+    void handleModeSwitch(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::EnhancedColorModeEnum newColorMode);
     uint16_t computeTransitionTimeFromStateAndRate(Color16uTransitionState * p, uint16_t rate);
     EmberEventControl * getEventControl(chip::EndpointId endpoint);
     void computePwmFromHsv(chip::EndpointId endpoint);
