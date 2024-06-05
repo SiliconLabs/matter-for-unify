@@ -282,6 +282,13 @@ CHIP_ERROR DnsHandler(int argc, char ** argv)
     return sShellDnsSubcommands.ExecCommand(argc, argv);
 }
 
+CHIP_ERROR BrowseStopHandler(int argc, char ** argv)
+{
+    streamer_printf(streamer_get(), "Stopping browse...\r\n");
+
+    return sResolverProxy.StopDiscovery();
+}
+
 } // namespace
 
 void RegisterDnsCommands()
@@ -292,6 +299,8 @@ void RegisterDnsCommands()
         { &BrowseCommissionerHandler, "commissioner",
           "Browse Matter commissioner nodes. Usage: dns browse commissioner [subtype]" },
         { &BrowseOperationalHandler, "operational", "Browse Matter operational nodes. Usage: dns browse operational" },
+        { &BrowseStopHandler, "stop", "Stop ongoing browse. Usage: dns browse stop" },
+
     };
 
     static const shell_command_t sDnsSubCommands[] = {
