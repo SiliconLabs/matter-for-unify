@@ -3360,8 +3360,9 @@ Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint16_t valu
 } // namespace CurrentY
 
 namespace DriftCompensation {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint8_t * value); // enum8
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value);
+Protocols::InteractionModel::Status Get(chip::EndpointId endpoint,
+                                        chip::app::Clusters::ColorControl::DriftCompensationEnum * value); // DriftCompensationEnum
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::DriftCompensationEnum value);
 } // namespace DriftCompensation
 
 namespace CompensationText {
@@ -3375,13 +3376,16 @@ Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint16_t valu
 } // namespace ColorTemperatureMireds
 
 namespace ColorMode {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint8_t * value); // enum8
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value);
+Protocols::InteractionModel::Status Get(chip::EndpointId endpoint,
+                                        chip::app::Clusters::ColorControl::ColorModeEnum * value); // ColorModeEnum
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::ColorModeEnum value);
 } // namespace ColorMode
 
 namespace Options {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint8_t * value); // bitmap8
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value);
+Protocols::InteractionModel::Status Get(chip::EndpointId endpoint,
+                                        chip::BitMask<chip::app::Clusters::ColorControl::OptionsBitmap> * value); // OptionsBitmap
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint,
+                                        chip::BitMask<chip::app::Clusters::ColorControl::OptionsBitmap> value);
 } // namespace Options
 
 namespace NumberOfPrimaries {
@@ -3560,8 +3564,9 @@ Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint16_t valu
 } // namespace EnhancedCurrentHue
 
 namespace EnhancedColorMode {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint8_t * value); // enum8
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value);
+Protocols::InteractionModel::Status Get(chip::EndpointId endpoint,
+                                        chip::app::Clusters::ColorControl::EnhancedColorModeEnum * value); // EnhancedColorModeEnum
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::EnhancedColorModeEnum value);
 } // namespace EnhancedColorMode
 
 namespace ColorLoopActive {
@@ -3570,8 +3575,9 @@ Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value
 } // namespace ColorLoopActive
 
 namespace ColorLoopDirection {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint8_t * value); // int8u
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint8_t value);
+Protocols::InteractionModel::Status
+Get(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::ColorLoopDirectionEnum * value); // ColorLoopDirectionEnum
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, chip::app::Clusters::ColorControl::ColorLoopDirectionEnum value);
 } // namespace ColorLoopDirection
 
 namespace ColorLoopTime {
@@ -3590,8 +3596,11 @@ Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint16_t valu
 } // namespace ColorLoopStoredEnhancedHue
 
 namespace ColorCapabilities {
-Protocols::InteractionModel::Status Get(chip::EndpointId endpoint, uint16_t * value); // bitmap16
-Protocols::InteractionModel::Status Set(chip::EndpointId endpoint, uint16_t value);
+Protocols::InteractionModel::Status
+Get(chip::EndpointId endpoint,
+    chip::BitMask<chip::app::Clusters::ColorControl::ColorCapabilitiesBitmap> * value); // ColorCapabilitiesBitmap
+Protocols::InteractionModel::Status Set(chip::EndpointId endpoint,
+                                        chip::BitMask<chip::app::Clusters::ColorControl::ColorCapabilitiesBitmap> value);
 } // namespace ColorCapabilities
 
 namespace ColorTempPhysicalMinMireds {

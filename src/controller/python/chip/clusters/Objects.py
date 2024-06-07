@@ -26750,7 +26750,7 @@ class DoorLock(Cluster):
                 ClusterObjectFieldDescriptor(Label="numberOfCredentialsSupportedPerUser", Tag=0x0000001C, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="language", Tag=0x00000021, Type=typing.Optional[str]),
                 ClusterObjectFieldDescriptor(Label="LEDSettings", Tag=0x00000022, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="autoRelockTime", Tag=0x00000023, Type=uint),
+                ClusterObjectFieldDescriptor(Label="autoRelockTime", Tag=0x00000023, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="soundVolume", Tag=0x00000024, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="operatingMode", Tag=0x00000025, Type=DoorLock.Enums.OperatingModeEnum),
                 ClusterObjectFieldDescriptor(Label="supportedOperatingModes", Tag=0x00000026, Type=uint),
@@ -26803,7 +26803,7 @@ class DoorLock(Cluster):
     numberOfCredentialsSupportedPerUser: 'typing.Optional[uint]' = None
     language: 'typing.Optional[str]' = None
     LEDSettings: 'typing.Optional[uint]' = None
-    autoRelockTime: 'uint' = None
+    autoRelockTime: 'typing.Optional[uint]' = None
     soundVolume: 'typing.Optional[uint]' = None
     operatingMode: 'DoorLock.Enums.OperatingModeEnum' = None
     supportedOperatingModes: 'uint' = None
@@ -28200,9 +28200,9 @@ class DoorLock(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=uint)
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[uint])
 
-            value: 'uint' = 0
+            value: 'typing.Optional[uint]' = None
 
         @dataclass
         class SoundVolume(ClusterAttributeDescriptor):
@@ -33151,10 +33151,10 @@ class ColorControl(Cluster):
                 ClusterObjectFieldDescriptor(Label="remainingTime", Tag=0x00000002, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="currentX", Tag=0x00000003, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="currentY", Tag=0x00000004, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="driftCompensation", Tag=0x00000005, Type=typing.Optional[uint]),
+                ClusterObjectFieldDescriptor(Label="driftCompensation", Tag=0x00000005, Type=typing.Optional[ColorControl.Enums.DriftCompensationEnum]),
                 ClusterObjectFieldDescriptor(Label="compensationText", Tag=0x00000006, Type=typing.Optional[str]),
                 ClusterObjectFieldDescriptor(Label="colorTemperatureMireds", Tag=0x00000007, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="colorMode", Tag=0x00000008, Type=uint),
+                ClusterObjectFieldDescriptor(Label="colorMode", Tag=0x00000008, Type=ColorControl.Enums.ColorModeEnum),
                 ClusterObjectFieldDescriptor(Label="options", Tag=0x0000000F, Type=uint),
                 ClusterObjectFieldDescriptor(Label="numberOfPrimaries", Tag=0x00000010, Type=typing.Union[Nullable, uint]),
                 ClusterObjectFieldDescriptor(Label="primary1X", Tag=0x00000011, Type=typing.Optional[uint]),
@@ -33187,9 +33187,9 @@ class ColorControl(Cluster):
                 ClusterObjectFieldDescriptor(Label="colorPointBY", Tag=0x0000003B, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="colorPointBIntensity", Tag=0x0000003C, Type=typing.Union[None, Nullable, uint]),
                 ClusterObjectFieldDescriptor(Label="enhancedCurrentHue", Tag=0x00004000, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="enhancedColorMode", Tag=0x00004001, Type=uint),
+                ClusterObjectFieldDescriptor(Label="enhancedColorMode", Tag=0x00004001, Type=ColorControl.Enums.EnhancedColorModeEnum),
                 ClusterObjectFieldDescriptor(Label="colorLoopActive", Tag=0x00004002, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="colorLoopDirection", Tag=0x00004003, Type=typing.Optional[uint]),
+                ClusterObjectFieldDescriptor(Label="colorLoopDirection", Tag=0x00004003, Type=typing.Optional[ColorControl.Enums.ColorLoopDirectionEnum]),
                 ClusterObjectFieldDescriptor(Label="colorLoopTime", Tag=0x00004004, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="colorLoopStartEnhancedHue", Tag=0x00004005, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="colorLoopStoredEnhancedHue", Tag=0x00004006, Type=typing.Optional[uint]),
@@ -33211,10 +33211,10 @@ class ColorControl(Cluster):
     remainingTime: 'typing.Optional[uint]' = None
     currentX: 'typing.Optional[uint]' = None
     currentY: 'typing.Optional[uint]' = None
-    driftCompensation: 'typing.Optional[uint]' = None
+    driftCompensation: 'typing.Optional[ColorControl.Enums.DriftCompensationEnum]' = None
     compensationText: 'typing.Optional[str]' = None
     colorTemperatureMireds: 'typing.Optional[uint]' = None
-    colorMode: 'uint' = None
+    colorMode: 'ColorControl.Enums.ColorModeEnum' = None
     options: 'uint' = None
     numberOfPrimaries: 'typing.Union[Nullable, uint]' = None
     primary1X: 'typing.Optional[uint]' = None
@@ -33247,9 +33247,9 @@ class ColorControl(Cluster):
     colorPointBY: 'typing.Optional[uint]' = None
     colorPointBIntensity: 'typing.Union[None, Nullable, uint]' = None
     enhancedCurrentHue: 'typing.Optional[uint]' = None
-    enhancedColorMode: 'uint' = None
+    enhancedColorMode: 'ColorControl.Enums.EnhancedColorModeEnum' = None
     colorLoopActive: 'typing.Optional[uint]' = None
-    colorLoopDirection: 'typing.Optional[uint]' = None
+    colorLoopDirection: 'typing.Optional[ColorControl.Enums.ColorLoopDirectionEnum]' = None
     colorLoopTime: 'typing.Optional[uint]' = None
     colorLoopStartEnhancedHue: 'typing.Optional[uint]' = None
     colorLoopStoredEnhancedHue: 'typing.Optional[uint]' = None
@@ -33266,7 +33266,7 @@ class ColorControl(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
-        class ColorLoopAction(MatterIntEnum):
+        class ColorLoopActionEnum(MatterIntEnum):
             kDeactivate = 0x00
             kActivateFromColorLoopStartEnhancedHue = 0x01
             kActivateFromEnhancedCurrentHue = 0x02
@@ -33276,28 +33276,28 @@ class ColorControl(Cluster):
             # enum value. This specific should never be transmitted.
             kUnknownEnumValue = 3,
 
-        class ColorLoopDirection(MatterIntEnum):
-            kDecrementHue = 0x00
-            kIncrementHue = 0x01
+        class ColorLoopDirectionEnum(MatterIntEnum):
+            kDecrement = 0x00
+            kIncrement = 0x01
             # All received enum values that are not listed above will be mapped
             # to kUnknownEnumValue. This is a helper enum value that should only
             # be used by code to process how it handles receiving and unknown
             # enum value. This specific should never be transmitted.
             kUnknownEnumValue = 2,
 
-        class ColorMode(MatterIntEnum):
+        class ColorModeEnum(MatterIntEnum):
             kCurrentHueAndCurrentSaturation = 0x00
             kCurrentXAndCurrentY = 0x01
-            kColorTemperature = 0x02
+            kColorTemperatureMireds = 0x02
             # All received enum values that are not listed above will be mapped
             # to kUnknownEnumValue. This is a helper enum value that should only
             # be used by code to process how it handles receiving and unknown
             # enum value. This specific should never be transmitted.
             kUnknownEnumValue = 3,
 
-        class HueDirection(MatterIntEnum):
-            kShortestDistance = 0x00
-            kLongestDistance = 0x01
+        class DirectionEnum(MatterIntEnum):
+            kShortest = 0x00
+            kLongest = 0x01
             kUp = 0x02
             kDown = 0x03
             # All received enum values that are not listed above will be mapped
@@ -33306,7 +33306,30 @@ class ColorControl(Cluster):
             # enum value. This specific should never be transmitted.
             kUnknownEnumValue = 4,
 
-        class HueMoveMode(MatterIntEnum):
+        class DriftCompensationEnum(MatterIntEnum):
+            kNone = 0x00
+            kOtherOrUnknown = 0x01
+            kTemperaturemonitoring = 0x02
+            kOpticalLuminanceMonitoringAndFeedback = 0x03
+            kOpticalColorMonitoringAndFeedback = 0x04
+            # All received enum values that are not listed above will be mapped
+            # to kUnknownEnumValue. This is a helper enum value that should only
+            # be used by code to process how it handles receiving and unknown
+            # enum value. This specific should never be transmitted.
+            kUnknownEnumValue = 5,
+
+        class EnhancedColorModeEnum(MatterIntEnum):
+            kCurrentHueAndCurrentSaturation = 0x00
+            kCurrentXAndCurrentY = 0x01
+            kColorTemperatureMireds = 0x02
+            kEnhancedCurrentHueAndCurrentSaturation = 0x03
+            # All received enum values that are not listed above will be mapped
+            # to kUnknownEnumValue. This is a helper enum value that should only
+            # be used by code to process how it handles receiving and unknown
+            # enum value. This specific should never be transmitted.
+            kUnknownEnumValue = 4,
+
+        class MoveModeEnum(MatterIntEnum):
             kStop = 0x00
             kUp = 0x01
             kDown = 0x03
@@ -33316,26 +33339,7 @@ class ColorControl(Cluster):
             # enum value. This specific should never be transmitted.
             kUnknownEnumValue = 2,
 
-        class HueStepMode(MatterIntEnum):
-            kUp = 0x01
-            kDown = 0x03
-            # All received enum values that are not listed above will be mapped
-            # to kUnknownEnumValue. This is a helper enum value that should only
-            # be used by code to process how it handles receiving and unknown
-            # enum value. This specific should never be transmitted.
-            kUnknownEnumValue = 0,
-
-        class SaturationMoveMode(MatterIntEnum):
-            kStop = 0x00
-            kUp = 0x01
-            kDown = 0x03
-            # All received enum values that are not listed above will be mapped
-            # to kUnknownEnumValue. This is a helper enum value that should only
-            # be used by code to process how it handles receiving and unknown
-            # enum value. This specific should never be transmitted.
-            kUnknownEnumValue = 2,
-
-        class SaturationStepMode(MatterIntEnum):
+        class StepModeEnum(MatterIntEnum):
             kUp = 0x01
             kDown = 0x03
             # All received enum values that are not listed above will be mapped
@@ -33345,25 +33349,21 @@ class ColorControl(Cluster):
             kUnknownEnumValue = 0,
 
     class Bitmaps:
-        class ColorCapabilities(IntFlag):
-            kHueSaturationSupported = 0x1
-            kEnhancedHueSupported = 0x2
-            kColorLoopSupported = 0x4
-            kXYAttributesSupported = 0x8
-            kColorTemperatureSupported = 0x10
-
-        class ColorLoopUpdateFlags(IntFlag):
-            kUpdateAction = 0x1
-            kUpdateDirection = 0x2
-            kUpdateTime = 0x4
-            kUpdateStartHue = 0x8
-
-        class Feature(IntFlag):
-            kHueAndSaturation = 0x1
+        class ColorCapabilitiesBitmap(IntFlag):
+            kHueSaturation = 0x1
             kEnhancedHue = 0x2
             kColorLoop = 0x4
             kXy = 0x8
             kColorTemperature = 0x10
+
+        class OptionsBitmap(IntFlag):
+            kExecuteIfOff = 0x1
+
+        class UpdateFlagsBitmap(IntFlag):
+            kUpdateAction = 0x1
+            kUpdateDirection = 0x2
+            kUpdateTime = 0x4
+            kUpdateStartHue = 0x8
 
     class Commands:
         @dataclass
@@ -33378,14 +33378,14 @@ class ColorControl(Cluster):
                 return ClusterObjectDescriptor(
                     Fields=[
                         ClusterObjectFieldDescriptor(Label="hue", Tag=0, Type=uint),
-                        ClusterObjectFieldDescriptor(Label="direction", Tag=1, Type=ColorControl.Enums.HueDirection),
+                        ClusterObjectFieldDescriptor(Label="direction", Tag=1, Type=ColorControl.Enums.DirectionEnum),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=4, Type=uint),
                     ])
 
             hue: 'uint' = 0
-            direction: 'ColorControl.Enums.HueDirection' = 0
+            direction: 'ColorControl.Enums.DirectionEnum' = 0
             transitionTime: 'uint' = 0
             optionsMask: 'uint' = 0
             optionsOverride: 'uint' = 0
@@ -33401,13 +33401,13 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.HueMoveMode),
+                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.MoveModeEnum),
                         ClusterObjectFieldDescriptor(Label="rate", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=3, Type=uint),
                     ])
 
-            moveMode: 'ColorControl.Enums.HueMoveMode' = 0
+            moveMode: 'ColorControl.Enums.MoveModeEnum' = 0
             rate: 'uint' = 0
             optionsMask: 'uint' = 0
             optionsOverride: 'uint' = 0
@@ -33423,14 +33423,14 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.HueStepMode),
+                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.StepModeEnum),
                         ClusterObjectFieldDescriptor(Label="stepSize", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=4, Type=uint),
                     ])
 
-            stepMode: 'ColorControl.Enums.HueStepMode' = 0
+            stepMode: 'ColorControl.Enums.StepModeEnum' = 0
             stepSize: 'uint' = 0
             transitionTime: 'uint' = 0
             optionsMask: 'uint' = 0
@@ -33469,13 +33469,13 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.SaturationMoveMode),
+                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.MoveModeEnum),
                         ClusterObjectFieldDescriptor(Label="rate", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=3, Type=uint),
                     ])
 
-            moveMode: 'ColorControl.Enums.SaturationMoveMode' = 0
+            moveMode: 'ColorControl.Enums.MoveModeEnum' = 0
             rate: 'uint' = 0
             optionsMask: 'uint' = 0
             optionsOverride: 'uint' = 0
@@ -33491,14 +33491,14 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.SaturationStepMode),
+                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.StepModeEnum),
                         ClusterObjectFieldDescriptor(Label="stepSize", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=4, Type=uint),
                     ])
 
-            stepMode: 'ColorControl.Enums.SaturationStepMode' = 0
+            stepMode: 'ColorControl.Enums.StepModeEnum' = 0
             stepSize: 'uint' = 0
             transitionTime: 'uint' = 0
             optionsMask: 'uint' = 0
@@ -33632,14 +33632,14 @@ class ColorControl(Cluster):
                 return ClusterObjectDescriptor(
                     Fields=[
                         ClusterObjectFieldDescriptor(Label="enhancedHue", Tag=0, Type=uint),
-                        ClusterObjectFieldDescriptor(Label="direction", Tag=1, Type=ColorControl.Enums.HueDirection),
+                        ClusterObjectFieldDescriptor(Label="direction", Tag=1, Type=ColorControl.Enums.DirectionEnum),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=4, Type=uint),
                     ])
 
             enhancedHue: 'uint' = 0
-            direction: 'ColorControl.Enums.HueDirection' = 0
+            direction: 'ColorControl.Enums.DirectionEnum' = 0
             transitionTime: 'uint' = 0
             optionsMask: 'uint' = 0
             optionsOverride: 'uint' = 0
@@ -33655,13 +33655,13 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.HueMoveMode),
+                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.MoveModeEnum),
                         ClusterObjectFieldDescriptor(Label="rate", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=3, Type=uint),
                     ])
 
-            moveMode: 'ColorControl.Enums.HueMoveMode' = 0
+            moveMode: 'ColorControl.Enums.MoveModeEnum' = 0
             rate: 'uint' = 0
             optionsMask: 'uint' = 0
             optionsOverride: 'uint' = 0
@@ -33677,14 +33677,14 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.HueStepMode),
+                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.StepModeEnum),
                         ClusterObjectFieldDescriptor(Label="stepSize", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=4, Type=uint),
                     ])
 
-            stepMode: 'ColorControl.Enums.HueStepMode' = 0
+            stepMode: 'ColorControl.Enums.StepModeEnum' = 0
             stepSize: 'uint' = 0
             transitionTime: 'uint' = 0
             optionsMask: 'uint' = 0
@@ -33726,8 +33726,8 @@ class ColorControl(Cluster):
                 return ClusterObjectDescriptor(
                     Fields=[
                         ClusterObjectFieldDescriptor(Label="updateFlags", Tag=0, Type=uint),
-                        ClusterObjectFieldDescriptor(Label="action", Tag=1, Type=ColorControl.Enums.ColorLoopAction),
-                        ClusterObjectFieldDescriptor(Label="direction", Tag=2, Type=ColorControl.Enums.ColorLoopDirection),
+                        ClusterObjectFieldDescriptor(Label="action", Tag=1, Type=ColorControl.Enums.ColorLoopActionEnum),
+                        ClusterObjectFieldDescriptor(Label="direction", Tag=2, Type=ColorControl.Enums.ColorLoopDirectionEnum),
                         ClusterObjectFieldDescriptor(Label="time", Tag=3, Type=uint),
                         ClusterObjectFieldDescriptor(Label="startHue", Tag=4, Type=uint),
                         ClusterObjectFieldDescriptor(Label="optionsMask", Tag=5, Type=uint),
@@ -33735,8 +33735,8 @@ class ColorControl(Cluster):
                     ])
 
             updateFlags: 'uint' = 0
-            action: 'ColorControl.Enums.ColorLoopAction' = 0
-            direction: 'ColorControl.Enums.ColorLoopDirection' = 0
+            action: 'ColorControl.Enums.ColorLoopActionEnum' = 0
+            direction: 'ColorControl.Enums.ColorLoopDirectionEnum' = 0
             time: 'uint' = 0
             startHue: 'uint' = 0
             optionsMask: 'uint' = 0
@@ -33771,7 +33771,7 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.HueMoveMode),
+                        ClusterObjectFieldDescriptor(Label="moveMode", Tag=0, Type=ColorControl.Enums.MoveModeEnum),
                         ClusterObjectFieldDescriptor(Label="rate", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="colorTemperatureMinimumMireds", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="colorTemperatureMaximumMireds", Tag=3, Type=uint),
@@ -33779,7 +33779,7 @@ class ColorControl(Cluster):
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=5, Type=uint),
                     ])
 
-            moveMode: 'ColorControl.Enums.HueMoveMode' = 0
+            moveMode: 'ColorControl.Enums.MoveModeEnum' = 0
             rate: 'uint' = 0
             colorTemperatureMinimumMireds: 'uint' = 0
             colorTemperatureMaximumMireds: 'uint' = 0
@@ -33797,7 +33797,7 @@ class ColorControl(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields=[
-                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.HueStepMode),
+                        ClusterObjectFieldDescriptor(Label="stepMode", Tag=0, Type=ColorControl.Enums.StepModeEnum),
                         ClusterObjectFieldDescriptor(Label="stepSize", Tag=1, Type=uint),
                         ClusterObjectFieldDescriptor(Label="transitionTime", Tag=2, Type=uint),
                         ClusterObjectFieldDescriptor(Label="colorTemperatureMinimumMireds", Tag=3, Type=uint),
@@ -33806,7 +33806,7 @@ class ColorControl(Cluster):
                         ClusterObjectFieldDescriptor(Label="optionsOverride", Tag=6, Type=uint),
                     ])
 
-            stepMode: 'ColorControl.Enums.HueStepMode' = 0
+            stepMode: 'ColorControl.Enums.StepModeEnum' = 0
             stepSize: 'uint' = 0
             transitionTime: 'uint' = 0
             colorTemperatureMinimumMireds: 'uint' = 0
@@ -33907,9 +33907,9 @@ class ColorControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[uint])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[ColorControl.Enums.DriftCompensationEnum])
 
-            value: 'typing.Optional[uint]' = None
+            value: 'typing.Optional[ColorControl.Enums.DriftCompensationEnum]' = None
 
         @dataclass
         class CompensationText(ClusterAttributeDescriptor):
@@ -33955,9 +33955,9 @@ class ColorControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=uint)
+                return ClusterObjectFieldDescriptor(Type=ColorControl.Enums.ColorModeEnum)
 
-            value: 'uint' = 0
+            value: 'ColorControl.Enums.ColorModeEnum' = 0
 
         @dataclass
         class Options(ClusterAttributeDescriptor):
@@ -34483,9 +34483,9 @@ class ColorControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=uint)
+                return ClusterObjectFieldDescriptor(Type=ColorControl.Enums.EnhancedColorModeEnum)
 
-            value: 'uint' = 0
+            value: 'ColorControl.Enums.EnhancedColorModeEnum' = 0
 
         @dataclass
         class ColorLoopActive(ClusterAttributeDescriptor):
@@ -34515,9 +34515,9 @@ class ColorControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[uint])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[ColorControl.Enums.ColorLoopDirectionEnum])
 
-            value: 'typing.Optional[uint]' = None
+            value: 'typing.Optional[ColorControl.Enums.ColorLoopDirectionEnum]' = None
 
         @dataclass
         class ColorLoopTime(ClusterAttributeDescriptor):
