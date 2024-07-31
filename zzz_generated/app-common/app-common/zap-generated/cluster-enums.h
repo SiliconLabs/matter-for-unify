@@ -3938,6 +3938,35 @@ enum class ColorMode : uint8_t
     kUnknownEnumValue = 3,
 };
 
+// Enum for DriftCompensationEnum
+enum class DriftCompensationEnum : uint8_t
+{
+    kNone                                  = 0x00,
+    kOtherUnknown                          = 0x01,
+    kTemperaturemonitoring                 = 0x02,
+    kOpticalLuminanceMonitoringAndFeedback = 0x03,
+    kOpticalColorMonitoringAndFeedback     = 0x04,
+    // All received enum values that are not listed above will be mapped
+    // to kUnknownEnumValue. This is a helper enum value that should only
+    // be used by code to process how it handles receiving and unknown
+    // enum value. This specific should never be transmitted.
+    kUnknownEnumValue = 5,
+};
+
+// Enum for EnhancedColorModeEnum
+enum class EnhancedColorModeEnum : uint8_t
+{
+    kCurrentHueAndCurrentSaturation         = 0x00,
+    kCurrentXAndCurrentY                    = 0x01,
+    kColorTemperature                       = 0x02,
+    kEnhancedCurrentHueAndCurrentSaturation = 0x03,
+    // All received enum values that are not listed above will be mapped
+    // to kUnknownEnumValue. This is a helper enum value that should only
+    // be used by code to process how it handles receiving and unknown
+    // enum value. This specific should never be transmitted.
+    kUnknownEnumValue = 4,
+};
+
 // Enum for HueDirection
 enum class HueDirection : uint8_t
 {
@@ -4029,6 +4058,12 @@ enum class Feature : uint32_t
     kColorLoop        = 0x4,
     kXy               = 0x8,
     kColorTemperature = 0x10,
+};
+
+// Bitmap for OptionsBitmap
+enum class OptionsBitmap : uint8_t
+{
+    kExecuteIfOff = 0x1,
 };
 } // namespace ColorControl
 

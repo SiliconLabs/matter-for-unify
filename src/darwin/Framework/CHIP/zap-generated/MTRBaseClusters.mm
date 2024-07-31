@@ -75167,7 +75167,7 @@ public:
         ListFreer listFreer;
         using TypeInfo = ColorControl::Attributes::Options::TypeInfo;
         TypeInfo::Type cppValue;
-                cppValue = value.unsignedCharValue;
+                cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
 
         chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
         return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
